@@ -86,7 +86,7 @@ void main (void)
 
     //Calculate Desired trim values based on desired frequency (24000 kHz)
     //Set Ratio/Desired MCLK Frequency, initialize DCO, save trim values
-    if(!CS_initFLLCalculateTrim(24000, 720, &param)){
+    if(!CS_initFLLCalculateTrim(CS_MCLK_DESIRED_FREQUENCY_IN_KHZ, CS_MCLK_FLLREF_RATIO, &param)){
         //Error setting MCLK (core clock) to 24MHz
     }
 
