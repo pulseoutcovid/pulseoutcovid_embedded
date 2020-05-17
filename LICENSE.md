@@ -1,0 +1,22 @@
+**Open COVID License – Patent and Copyright (OCL-PC) 1.1**
+
+Having made the Open COVID Pledge, we (the “Pledgor”), in order to speed the development and dissemination of the technologies needed to end the COVID-19 Pandemic and mitigate the effects of the disease, grant the license described below.
+
+Our intent in doing so is to advance the shared cause of ending the COVID-19 Pandemic, and we do so without any expectation of consideration or compensation, and with knowledge of the rights we are licensing.
+
+1. **GRANT AND SCOPE** 
+The Pledgor grants to every person and entity that wishes to accept it, a non-exclusive, royalty-free, worldwide, fully paid-up license (without the right to sublicense) under Pledgor’s patents and copyrights that we have the right to license (the “Licensed IP”) to make, have made, use, sell, and import any patented invention, and reproduce, adapt, translate, distribute, perform, display, modify, create derivative works of and otherwise exploit any copyrights, solely for the purpose of diagnosing, preventing, containing, and treating COVID-19.
+
+2. **TIME LIMITATION**
+This license is effective as of December 1, 2019 and lasts until one year after the World Health Organization declares the COVID-19 Pandemic to have ended, but in any event not beyond January 1, 2023, unless otherwise extended by the Pledgor. 
+
+3. **REGULATORY EXCLUSIVITY**
+The Pledgor will not assert any regulatory exclusivity against any entity or individual for use of the Licensed IP in accordance with the license granted in Section 1, and we will not seek injunctive or regulatory relief to prevent any entity or individual from doing so.
+
+4. **DEFENSIVE SUSPENSION**
+The license and non-assertion covenant granted above shall automatically be suspended, and the Pledgor shall be free to assert the Licensed IP against the licensee, if the licensee or any entity affiliated with the licensee threatens or initiates a suit or legal proceeding alleging the infringement of any patent or other intellectual property right against the Pledgor or any entity affiliated with the Pledgor.
+
+5. **NO WARRANTY**
+The license granted herein is “AS IS” without any warranties, express or implied. 
+
+All copyright and related rights in the Open COVID License are waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
