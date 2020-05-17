@@ -29,8 +29,18 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * --/COPYRIGHT--*/
+
+//C Std Includes
+#include <stdbool.h>
+
+//Include MSP430Ware Driver Header
 #include "driverlib.h"
-#include "pulseoutcovid_defines.h"
+
+//Include peripheral headers
+#include "MSP430/Clock/clock.h"
+
+//PulseOutCovid Global Defines
+#include "pulseoutcovid_config.h"
 
 #include "Board.h"
 
@@ -41,56 +51,17 @@ void main (void)
     // Stop Watchdog timer
     WDT_A_hold(WDT_A_BASE);
 
-    //DEBUG PURPOSES ONLY
-    //Will Be removed
 
-    //Set LED2 to output direction
-    GPIO_setAsOutputPin(
-        GPIO_PORT_LED2,
-        GPIO_PIN_LED2
-        );
-
-    //ACLK set out to pins
-    GPIO_setAsPeripheralModuleFunctionOutputPin(
-        GPIO_PORT_ACLK,
-        GPIO_PIN_ACLK,
-        GPIO_FUNCTION_ACLK
-        );
-    //SMCLK set out to pins
-    GPIO_setAsPeripheralModuleFunctionOutputPin(
-        GPIO_PORT_SMCLK,
-        GPIO_PIN_SMCLK,
-        GPIO_FUNCTION_SMCLK
-        );
-    //MCLK set out to pins
-    GPIO_setAsPeripheralModuleFunctionOutputPin(
-        GPIO_PORT_MCLK,
-        GPIO_PIN_MCLK,
-        GPIO_FUNCTION_MCLK
-        );
-
-
+    ConfigurePins(&pins, NUM_CONFIG_PINS);
     /*
      * Disable the GPIO power-on default high-impedance mode to activate
      * previously configured port settings
      */
     PMM_unlockLPM5();
 
-    //Set DCO FLL Reference = REFO (internal 32768Hz clock)
-    CS_initClockSignal(CS_FLLREF, CS_REFOCLK_SELECT, CS_CLOCK_DIVIDER_1);
-    //Set ACLK = REFO (internal 32768Hz clock)
-    CS_initClockSignal(CS_ACLK, CS_REFOCLK_SELECT, CS_CLOCK_DIVIDER_1);
+    // Configure Clock Tree
+    ConfigureClockTree(&tree);
 
-    //Create struct variable to store proper software trim values
-    CS_initFLLParam param = {0};
-
-    //Calculate Desired trim values based on desired frequency (24000 kHz)
-    //Set Ratio/Desired MCLK Frequency, initialize DCO, save trim values
-    if(!CS_initFLLCalculateTrim(CS_MCLK_DESIRED_FREQUENCY_IN_KHZ, CS_MCLK_FLLREF_RATIO, &param)){
-        //Error setting MCLK (core clock) to 24MHz
-    }
-
-    CS_clearAllOscFlagsWithTimeout(1000);
     //Enable oscillator fault interrupt
     SFR_enableInterrupt(SFR_OSCILLATOR_FAULT_INTERRUPT);
 
@@ -102,14 +73,9 @@ void main (void)
 
     while (1)
     {
-        //Toggle LED2
-        GPIO_toggleOutputOnPin(
-            GPIO_PORT_LED2,
-            GPIO_PIN_LED2
-            );
 
         //Delay
-        __delay_cycles(24000000);
+        __delay_cycles(12000000);
     }
 
 }
