@@ -18,7 +18,7 @@
 #include "io.h"
 
 
-static inline void ConfigurePin(Pin * pin)
+static inline void ConfigurePin(const Pin * pin)
 {
     if(pin->enable){
         if(pin->mode != 0){
@@ -45,7 +45,7 @@ static inline void ConfigurePin(Pin * pin)
 }
 
 
-void ConfigurePins(Pin * pins, uint8_t number_pins)
+void ConfigurePins(const Pin * pins, uint8_t number_pins)
 {
 
     int i = 0;

@@ -38,6 +38,7 @@
 
 //Include peripheral headers
 #include "MSP430/Clock/clock.h"
+#include "MSP430/Timer_B/timer_b.h"
 
 //PulseOutCovid Global Defines
 #include "pulseoutcovid_config.h"
@@ -51,8 +52,6 @@ void main (void)
     // Stop Watchdog timer
     WDT_A_hold(WDT_A_BASE);
 
-
-    ConfigurePins(&pins, NUM_CONFIG_PINS);
     /*
      * Disable the GPIO power-on default high-impedance mode to activate
      * previously configured port settings
@@ -61,21 +60,32 @@ void main (void)
 
     // Configure Clock Tree
     ConfigureClockTree(&tree);
+    //Verify if the Clock settings are as expected
+    clockValue = CS_getMCLK();
+
+    //Configure IO
+    ConfigurePins(pins, NUM_CONFIG_PINS);
+
+#if !DEBUG
+    //Configure TimerB
+    ConfigureTimerB(&timer_b_config, TB1_BASE);
+    ConfigureTimerB(&timer_b_config, TB2_BASE);
+    //Setup CC registers
+    ConfigureCCModes(CC_configs, NUM_CC_CONFIGS);
+#endif
+
 
     //Enable oscillator fault interrupt
     SFR_enableInterrupt(SFR_OSCILLATOR_FAULT_INTERRUPT);
 
     // Enable global interrupt
     __bis_SR_register(GIE);
-
-    //Verify if the Clock settings are as expected
-    clockValue = CS_getMCLK();
-
     while (1)
     {
 
         //Delay
         __delay_cycles(12000000);
+        GPIO_toggleOutputOnPin(RED_IND_LED_PORT, GREEN_IND_LED_PIN | RED_IND_LED_PIN | YELLOW_IND_LED_PIN);
     }
 
 }

@@ -10,6 +10,9 @@
 
 #include "MSP430/Clock/clock.h"
 #include "MSP430/IO/io.h"
+#include "MSP430/Timer_B/timer_b.h"
+
+#define DEBUG 1
 
 
 
@@ -39,6 +42,102 @@ const ClockTree tree = {
      },
 };
 
+//Timer_B Globals
+#define TIMER_B_SRC_CLK                     TIMER_B_CLOCKSOURCE_SMCLK
+#define TIMER_B_SRC_CLK_PERIOD_HZ           24000000
+#define TIMER_B_CLK_DIV                     TIMER_B_CLOCKSOURCE_DIVIDER_6
+#define TIMER_B_CLK_DIV_VAL                 6
+
+#define TIMER_B_LED_PERIOD_US                   1000
+#define TIMER_B_RED_IR_LED_ON_US                200
+#define TIMER_B_BETWEEN_RED_IR_PULSES_US        400
+
+
+const Timer_B_Config timer_b_config =
+{
+     .mode                                  = UP,
+     .Timer_B_config_param                  =
+     {
+          .up_param       =
+          {
+               .clockSource                             = TIMER_B_SRC_CLK,
+               .clockSourceDivider                      = TIMER_B_CLK_DIV,
+               .timerPeriod                             = TIMER_B_LED_PERIOD_US * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
+               .timerInterruptEnable_TBIE               = TIMER_B_TBIE_INTERRUPT_ENABLE,
+               .captureCompareInterruptEnable_CCR0_CCIE = TIMER_B_CCIE_CCR0_INTERRUPT_ENABLE,
+               .timerClear                              = TIMER_B_DO_CLEAR,
+               .startTimer                              = false,
+          },
+     },
+};
+
+#define NUM_CC_CONFIGS     4
+const Timer_B_CC_Config CC_configs [] = {
+
+    {
+         .modeSelect                    = COMPARE,
+         .baseAddress                   = TB2_BASE,
+         .Timer_B_CC_config_param       =
+         {
+             .comp_param                =
+             {
+                  .compareRegister          = TIMER_B_CAPTURECOMPARE_REGISTER_0,
+                  .compareInterruptEnable   = TIMER_B_CAPTURECOMPARE_INTERRUPT_ENABLE,
+                  .compareOutputMode        = TIMER_B_OUTPUTMODE_OUTBITVALUE,
+                  .compareValue             = 0,
+             },
+         },
+    },
+
+    {
+         .modeSelect                    = COMPARE,
+         .baseAddress                   = TB2_BASE,
+         .Timer_B_CC_config_param       =
+         {
+             .comp_param                =
+             {
+                  .compareRegister          = TIMER_B_CAPTURECOMPARE_REGISTER_1,
+                  .compareInterruptEnable   = TIMER_B_CAPTURECOMPARE_INTERRUPT_ENABLE,
+                  .compareOutputMode        = TIMER_B_OUTPUTMODE_RESET_SET,
+                  .compareValue             = TIMER_B_RED_IR_LED_ON_US * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
+             },
+         },
+    },
+
+
+    {
+         .modeSelect                    = COMPARE,
+         .baseAddress                   = TB1_BASE,
+         .Timer_B_CC_config_param       =
+         {
+             .comp_param                =
+             {
+                  .compareRegister          = TIMER_B_CAPTURECOMPARE_REGISTER_0,
+                  .compareInterruptEnable   = TIMER_B_CAPTURECOMPARE_INTERRUPT_ENABLE,
+                  .compareOutputMode        = TIMER_B_OUTPUTMODE_OUTBITVALUE,
+                  .compareValue             = (TIMER_B_RED_IR_LED_ON_US + TIMER_B_BETWEEN_RED_IR_PULSES_US) * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
+             },
+         },
+    },
+
+    {
+         .modeSelect                    = COMPARE,
+         .baseAddress                   = TB1_BASE,
+         .Timer_B_CC_config_param       =
+         {
+             .comp_param                =
+             {
+                  .compareRegister          = TIMER_B_CAPTURECOMPARE_REGISTER_1,
+                  .compareInterruptEnable   = TIMER_B_CAPTURECOMPARE_INTERRUPT_ENABLE,
+                  .compareOutputMode        = TIMER_B_OUTPUTMODE_RESET_SET,
+                  .compareValue             = (TIMER_B_RED_IR_LED_ON_US + TIMER_B_RED_IR_LED_ON_US + TIMER_B_BETWEEN_RED_IR_PULSES_US) * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
+
+             },
+         },
+    },
+};
+
+
 // IO Globals
 #define NUM_CONFIG_PINS     23
 const Pin pins[] = {
@@ -48,7 +147,7 @@ const Pin pins[] = {
          .port      = GPIO_PORT_P3,
          .pin       = GPIO_PIN1,
          .direction = OUTPUT,
-         .mode      = 3,
+         .mode      = GPIO_TERNARY_MODULE_FUNCTION,
          .enable    = true,
     },
 
@@ -58,7 +157,7 @@ const Pin pins[] = {
          .port      = GPIO_PORT_P3,
          .pin       = GPIO_PIN0,
          .direction = OUTPUT,
-         .mode      = 1,
+         .mode      = GPIO_PRIMARY_MODULE_FUNCTION,
          .enable    = false,
     },
 
@@ -68,7 +167,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P1,
         .pin        = GPIO_PIN3,
         .direction  = INPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -78,7 +177,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P1,
         .pin        = GPIO_PIN1,
         .direction  = OUTPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -88,13 +187,16 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P1,
         .pin        = GPIO_PIN0,
         .direction  = INPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = false,
     },
 
     // P2.7 Red Indicator LED On/Off
     // Pin 12
     {
+#define RED_IND_LED_PORT           GPIO_PORT_P2
+#define RED_IND_LED_PIN            GPIO_PIN7
+
         .port       = GPIO_PORT_P2,
         .pin        = GPIO_PIN7,
         .direction  = OUTPUT,
@@ -105,6 +207,8 @@ const Pin pins[] = {
     // P2.6 Yellow Indicator LED On/Off
     // Pin 13
     {
+#define YELLOW_IND_LED_PORT        GPIO_PORT_P2
+#define YELLOW_IND_LED_PIN            GPIO_PIN6
         .port       = GPIO_PORT_P2,
         .pin        = GPIO_PIN6,
         .direction  = OUTPUT,
@@ -115,6 +219,8 @@ const Pin pins[] = {
     // P2.5 Green LED Indicator LED On/Off
     // Pin 14
     {
+#define GREEN_IND_LED_PORT         GPIO_PORT_P2
+#define GREEN_IND_LED_PIN            GPIO_PIN5
         .port       = GPIO_PORT_P2,
         .pin        = GPIO_PIN5,
         .direction  = OUTPUT,
@@ -138,7 +244,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P4,
         .pin        = GPIO_PIN7,
         .direction  = EITHER,
-        .mode       = 1,
+        .mode       = GPIO_PRIMARY_MODULE_FUNCTION,
         .enable    = false,
     },
 
@@ -148,7 +254,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P4,
         .pin        = GPIO_PIN6,
         .direction  = EITHER,
-        .mode       = 1,
+        .mode       = GPIO_PRIMARY_MODULE_FUNCTION,
         .enable    = false,
     },
 
@@ -158,7 +264,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P4,
         .pin        = GPIO_PIN3,
         .direction  = OUTPUT,
-        .mode       = 1,
+        .mode       = GPIO_PRIMARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -168,7 +274,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P4,
         .pin        = GPIO_PIN2,
         .direction  = INPUT,
-        .mode       = 1,
+        .mode       = GPIO_PRIMARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -178,7 +284,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P2,
         .pin        = GPIO_PIN1,
         .direction  = OUTPUT,
-        .mode       = 1,
+        .mode       = GPIO_PRIMARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -188,7 +294,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P2,
         .pin        = GPIO_PIN0,
         .direction  = OUTPUT,
-        .mode       = 1,
+        .mode       = GPIO_PRIMARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -198,7 +304,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P1,
         .pin        = GPIO_PIN7,
         .direction  = INPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -208,7 +314,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P1,
         .pin        = GPIO_PIN6,
         .direction  = INPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -218,7 +324,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P1,
         .pin        = GPIO_PIN5,
         .direction  = OUTPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -228,7 +334,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P1,
         .pin        = GPIO_PIN4,
         .direction  = INPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -238,7 +344,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P3,
         .pin        = GPIO_PIN7,
         .direction  = INPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = false,
     },
 
@@ -248,7 +354,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P3,
         .pin        = GPIO_PIN6,
         .direction  = INPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -258,7 +364,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P3,
         .pin        = GPIO_PIN5,
         .direction  = OUTPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = true,
     },
 
@@ -268,7 +374,7 @@ const Pin pins[] = {
         .port       = GPIO_PORT_P5,
         .pin        = GPIO_PIN1,
         .direction  = INPUT,
-        .mode       = 3,
+        .mode       = GPIO_TERNARY_MODULE_FUNCTION,
         .enable    = true,
     },
 

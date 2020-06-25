@@ -56,7 +56,7 @@ typedef struct ClockTree{
 } ClockTree;
 
 
-bool ConfigureClockTree(ClockTree * tree);
+bool ConfigureClockTree(const ClockTree * tree);
 
 
 

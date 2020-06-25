@@ -1,8 +1,10 @@
 /*
  * io.h
  *
+ * io.h contains implementation to initialize pins and set pin behavior
+ *
  *  Created on: May 16, 2020
- *      Author: andre
+ *      Author: Andrew Ruf
  */
 
 #ifndef MSP430_IO_IO_H_
@@ -25,7 +27,7 @@ typedef struct Pin{
 } Pin;
 
 
-void ConfigurePins(Pin * pins, uint8_t number_pins);
+void ConfigurePins(const Pin * pins, uint8_t number_pins);
 
 
 #endif /* MSP430_IO_IO_H_ */

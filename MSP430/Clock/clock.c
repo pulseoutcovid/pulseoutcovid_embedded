@@ -31,7 +31,7 @@ CS_initFLLParam fllparam;
  *
  *
  ***********************************************************/
-bool ConfigureClockTree(ClockTree * tree)
+bool ConfigureClockTree(const ClockTree * tree)
 {
     bool retVal = false;
     CS_initClockSignal(CS_FLLREF, tree->Dco.clocksource, tree->Dco.FLLdivider);
