@@ -38,7 +38,7 @@ static inline void ConfigurePin(const Pin * pin)
                 GPIO_setAsInputPin(pin->port, pin->pin);
             }
             else{
-                GPIO_setAsInputPin(pin->port, pin->pin);
+                GPIO_setAsOutputPin(pin->port, pin->pin);
             }
         }
     }
