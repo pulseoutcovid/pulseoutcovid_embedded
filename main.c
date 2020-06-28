@@ -72,11 +72,16 @@ void main (void)
     ConfigureTimerB(&timer_b_config, TB2_BASE);
     //Setup CC registers
     ConfigureCCModes(CC_configs, NUM_CC_CONFIGS);
+
+    //Configure ADC
+    ConfigureADC(&adc_config, ADC_BASE);
 #endif
 
 
     //Enable oscillator fault interrupt
     SFR_enableInterrupt(SFR_OSCILLATOR_FAULT_INTERRUPT);
+
+    GPIO_setOutputLowOnPin(RED_IND_LED_PORT, GREEN_IND_LED_PIN | RED_IND_LED_PIN | YELLOW_IND_LED_PIN);
 
     // Enable global interrupt
     __bis_SR_register(GIE);
@@ -85,7 +90,9 @@ void main (void)
 
         //Delay
         __delay_cycles(12000000);
+#if DEBUG
         GPIO_toggleOutputOnPin(RED_IND_LED_PORT, GREEN_IND_LED_PIN | RED_IND_LED_PIN | YELLOW_IND_LED_PIN);
+#endif
     }
 
 }

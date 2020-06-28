@@ -11,6 +11,7 @@
 #include "MSP430/Clock/clock.h"
 #include "MSP430/IO/io.h"
 #include "MSP430/Timer_B/timer_b.h"
+#include "MSP430/ADC/adc.h"
 
 #define DEBUG 1
 
@@ -135,6 +136,20 @@ const Timer_B_CC_Config CC_configs [] = {
              },
          },
     },
+};
+
+// ADC Globals
+const ADC_Config adc_config =
+{
+     .sampleHoldSourceSelect        = ADC_SAMPLEHOLDSOURCE_SC,
+     .clockSource                   = ADC_CLOCKSOURCE_SMCLK,
+     .clockDivider                  = ADC_CLOCKDIVIDER_6,
+     .resolution                    = ADC_RESOLUTION_12BIT,
+     .interruptMask                 = 0,
+     .readBackFormat                = ADC_UNSIGNED_BINARY,
+     .clockCycleHoldCount           = ADC_CYCLEHOLD_16_CYCLES,
+     .multipleConversionEnable      = ADC_MULTIPLESAMPLESDISABLE,
+     .refBufferSamplingRate         = ADC_MAXSAMPLINGRATE_200KSPS
 };
 
 

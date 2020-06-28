@@ -14,12 +14,15 @@ typedef struct {
     uint16_t    sampleHoldSourceSelect;
     uint8_t     clockSource;
     uint16_t    clockDivider;
-
     uint16_t    resolution;
     uint16_t    interruptMask;
     uint16_t    readBackFormat;
-    uint16_t    samplingRate;
+    uint16_t    clockCycleHoldCount;
+    uint16_t    multipleConversionEnable;
+    uint16_t    refBufferSamplingRate;
 
 } ADC_Config;
+
+void ConfigureADC(const ADC_Config * adc_config, uint16_t baseAddress);
 
 #endif /* MSP430_ADC_ADC_H_ */
