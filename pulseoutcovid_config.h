@@ -12,8 +12,9 @@
 #include "MSP430/IO/io.h"
 #include "MSP430/Timer_B/timer_b.h"
 #include "MSP430/ADC/adc.h"
+#include "MSP430/SAC/sac.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 
 
@@ -50,8 +51,8 @@ const ClockTree tree = {
 #define TIMER_B_CLK_DIV_VAL                 6
 
 #define TIMER_B_LED_PERIOD_US                   1000
-#define TIMER_B_RED_IR_LED_ON_US                200
-#define TIMER_B_BETWEEN_RED_IR_PULSES_US        400
+#define TIMER_B_RED_IR_LED_ON_US                333
+#define TIMER_B_BETWEEN_RED_IR_PULSES_US        333
 
 
 const Timer_B_Config timer_b_config =
@@ -64,7 +65,7 @@ const Timer_B_Config timer_b_config =
                .clockSource                             = TIMER_B_SRC_CLK,
                .clockSourceDivider                      = TIMER_B_CLK_DIV,
                .timerPeriod                             = TIMER_B_LED_PERIOD_US * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
-               .timerInterruptEnable_TBIE               = TIMER_B_TBIE_INTERRUPT_ENABLE,
+               .timerInterruptEnable_TBIE               = TIMER_B_TBIE_INTERRUPT_DISABLE,
                .captureCompareInterruptEnable_CCR0_CCIE = TIMER_B_CCIE_CCR0_INTERRUPT_ENABLE,
                .timerClear                              = TIMER_B_DO_CLEAR,
                .startTimer                              = false,
@@ -72,23 +73,9 @@ const Timer_B_Config timer_b_config =
      },
 };
 
-#define NUM_CC_CONFIGS     4
+#define NUM_CC_CONFIGS     2
 const Timer_B_CC_Config CC_configs [] = {
 
-    {
-         .modeSelect                    = COMPARE,
-         .baseAddress                   = TB2_BASE,
-         .Timer_B_CC_config_param       =
-         {
-             .comp_param                =
-             {
-                  .compareRegister          = TIMER_B_CAPTURECOMPARE_REGISTER_0,
-                  .compareInterruptEnable   = TIMER_B_CAPTURECOMPARE_INTERRUPT_ENABLE,
-                  .compareOutputMode        = TIMER_B_OUTPUTMODE_OUTBITVALUE,
-                  .compareValue             = 0,
-             },
-         },
-    },
 
     {
          .modeSelect                    = COMPARE,
@@ -113,25 +100,10 @@ const Timer_B_CC_Config CC_configs [] = {
          {
              .comp_param                =
              {
-                  .compareRegister          = TIMER_B_CAPTURECOMPARE_REGISTER_0,
-                  .compareInterruptEnable   = TIMER_B_CAPTURECOMPARE_INTERRUPT_ENABLE,
-                  .compareOutputMode        = TIMER_B_OUTPUTMODE_OUTBITVALUE,
-                  .compareValue             = (TIMER_B_RED_IR_LED_ON_US + TIMER_B_BETWEEN_RED_IR_PULSES_US) * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
-             },
-         },
-    },
-
-    {
-         .modeSelect                    = COMPARE,
-         .baseAddress                   = TB1_BASE,
-         .Timer_B_CC_config_param       =
-         {
-             .comp_param                =
-             {
                   .compareRegister          = TIMER_B_CAPTURECOMPARE_REGISTER_1,
                   .compareInterruptEnable   = TIMER_B_CAPTURECOMPARE_INTERRUPT_ENABLE,
-                  .compareOutputMode        = TIMER_B_OUTPUTMODE_RESET_SET,
-                  .compareValue             = (TIMER_B_RED_IR_LED_ON_US + TIMER_B_RED_IR_LED_ON_US + TIMER_B_BETWEEN_RED_IR_PULSES_US) * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
+                  .compareOutputMode        = TIMER_B_OUTPUTMODE_SET_RESET,
+                  .compareValue             = (TIMER_B_RED_IR_LED_ON_US + TIMER_B_BETWEEN_RED_IR_PULSES_US) * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
 
              },
          },
@@ -150,6 +122,52 @@ const ADC_Config adc_config =
      .clockCycleHoldCount           = ADC_CYCLEHOLD_16_CYCLES,
      .multipleConversionEnable      = ADC_MULTIPLESAMPLESDISABLE,
      .refBufferSamplingRate         = ADC_MAXSAMPLINGRATE_200KSPS
+};
+
+//SAC Configs
+//For SAC 0 and SAC 2
+const SAC sac_LED_config =
+{
+     .sacMode       = DAC,
+
+     .oaPosInput    = SAC_OA_POSITIVE_INPUT_SOURCE_DAC,
+     .oaNegInput    = SAC_OA_NEGATIVE_INPUT_SOURCE_PGA,
+     .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
+
+     .pgaGainMode   = SAC_PGA_MODE_BUFFER,
+     .pgaGain       = SAC_PGA_GAIN_BIT0,
+
+     .dacRefVoltage = SAC_DAC_PRIMARY_REFERENCE,
+     .dacLoad       = SAC_DAC_LOAD_DACDAT_WRITTEN,
+     .dacInitData   = 0x0000,
+};
+
+const SAC sac_1_config =
+{
+     .sacMode       = PGA,
+     .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
+     .oaPosInput    = SAC_OA_POSITIVE_INPUT_SOURCE_EXTERNAL,
+     .oaNegInput    = SAC_OA_NEGATIVE_INPUT_SOURCE_EXTERNAL,
+
+     .pgaGainMode   = SAC_PGA_MODE_BUFFER,
+     .pgaGain       = SAC_PGA_GAIN_BIT0,               // - 1 Gain
+
+};
+
+const SAC sac_3_config =
+{
+     .sacMode       = DAC,
+     .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
+     .oaPosInput    = SAC_OA_POSITIVE_INPUT_SOURCE_DAC,
+     .oaNegInput    = SAC_OA_NEGATIVE_INPUT_SOURCE_EXTERNAL,
+
+     .pgaGainMode   = SAC_PGA_MODE_INVERTING,
+     .pgaGain       = SAC_PGA_GAIN_BIT2,                // -8 Gain
+
+     .dacRefVoltage = SAC_DAC_PRIMARY_REFERENCE,
+     .dacLoad       = SAC_DAC_LOAD_DACDAT_WRITTEN,
+     .dacInitData   = 273                               // ~220 mv offset
+
 };
 
 
@@ -293,11 +311,11 @@ const Pin pins[] = {
         .enable    = true,
     },
 
-    // P2.1 TB1.2 Red LED PWM
+    // P2.1 TB2.1 Red LED PWM
     // Pin 26
     {
-        .port       = GPIO_PORT_P2,
-        .pin        = GPIO_PIN1,
+        .port       = GPIO_PORT_P5,
+        .pin        = GPIO_PIN0,
         .direction  = OUTPUT,
         .mode       = GPIO_PRIMARY_MODULE_FUNCTION,
         .enable    = true,
@@ -390,10 +408,11 @@ const Pin pins[] = {
         .pin        = GPIO_PIN1,
         .direction  = INPUT,
         .mode       = GPIO_TERNARY_MODULE_FUNCTION,
-        .enable    = true,
+        .enable     = true,
     },
 
 };
+
 
 
 

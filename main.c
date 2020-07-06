@@ -39,6 +39,7 @@
 //Include peripheral headers
 #include "MSP430/Clock/clock.h"
 #include "MSP430/Timer_B/timer_b.h"
+#include "MSP430/SAC/sac.h"
 
 //PulseOutCovid Global Defines
 #include "pulseoutcovid_config.h"
@@ -67,9 +68,26 @@ void main (void)
     ConfigurePins(pins, NUM_CONFIG_PINS);
 
 #if !DEBUG
+    //Configure SACs
+    //Configure SAC0
+    //IR LED Current Control DAC
+    ConfigureSAC(&sac_LED_config, SAC0_BASE);
+    //Configure SAC2
+    //Red LED Current Control DAC
+    ConfigureSAC(&sac_LED_config, SAC2_BASE);
+
+    //Configure SAC1
+    //TIA
+    ConfigureSAC(&sac_1_config, SAC1_BASE);
+
+    //Configure SAC3
+    //Gain Stage Amplifier
+    ConfigureSAC(&sac_3_config, SAC3_BASE);
+
     //Configure TimerB
     ConfigureTimerB(&timer_b_config, TB1_BASE);
     ConfigureTimerB(&timer_b_config, TB2_BASE);
+
     //Setup CC registers
     ConfigureCCModes(CC_configs, NUM_CC_CONFIGS);
 
@@ -77,6 +95,8 @@ void main (void)
     ConfigureADC(&adc_config, ADC_BASE);
 #endif
 
+    //StartTimerB(&timer_b_config, TB1_BASE);
+    StartTimerB(&timer_b_config, TB2_BASE);
 
     //Enable oscillator fault interrupt
     SFR_enableInterrupt(SFR_OSCILLATOR_FAULT_INTERRUPT);
@@ -88,9 +108,9 @@ void main (void)
     while (1)
     {
 
+#if DEBUG
         //Delay
         __delay_cycles(12000000);
-#if DEBUG
         GPIO_toggleOutputOnPin(RED_IND_LED_PORT, GREEN_IND_LED_PIN | RED_IND_LED_PIN | YELLOW_IND_LED_PIN);
 #endif
     }

@@ -61,5 +61,6 @@ typedef struct Timer_B_Config{
 
 void ConfigureTimerB(const Timer_B_Config * config, uint16_t baseAddress);
 void ConfigureCCModes(const Timer_B_CC_Config * cc_configs, uint8_t num_configs);
+void StartTimerB(const Timer_B_Config * config, uint16_t baseAddress);
 
 #endif /* MSP430_TIMER_B_TIMER_B_H_ */

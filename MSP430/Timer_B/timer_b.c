@@ -9,6 +9,7 @@
 
 #include "timer_b.h"
 
+
 void ConfigureCCModes(const Timer_B_CC_Config * cc_configs, uint8_t num_configs)
 {
     unsigned int i;
@@ -43,5 +44,25 @@ void ConfigureTimerB(const Timer_B_Config * config, uint16_t baseAddress)
             break;
     }
 
+
+}
+
+
+void StartTimerB(const Timer_B_Config * config, uint16_t baseAddress)
+{
+    switch(config->mode)
+    {
+    case UP:
+        Timer_B_startCounter(baseAddress, TIMER_B_UP_MODE);
+        break;
+    case UP_DOWN:
+        Timer_B_startCounter(baseAddress, TIMER_B_UPDOWN_MODE);
+        break;
+    case CONTINUOUS:
+        Timer_B_startCounter(baseAddress, TIMER_B_CONTINUOUS_MODE);
+        break;
+    default:
+        Timer_B_stop(baseAddress);
+    }
 
 }
