@@ -23,6 +23,16 @@ typedef struct {
 
 } ADC_Config;
 
+typedef struct {
+    uint16_t    inputSource;
+    uint8_t     posRefVoltage;
+    uint8_t     negRefVoltage;
+
+    uint16_t    conversionSequenceMode;
+    bool        blocking;
+} ADC_Measurement_Config;
+
 void ConfigureADC(const ADC_Config * adc_config, uint16_t baseAddress);
+int16_t ReadADC(ADC_Measurement_Config * config, uint16_t baseAddress);
 
 #endif /* MSP430_ADC_ADC_H_ */

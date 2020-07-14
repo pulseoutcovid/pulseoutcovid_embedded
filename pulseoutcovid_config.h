@@ -19,7 +19,7 @@
 
 
 // Clock Tree Globals
-const ClockTree tree = {
+static const ClockTree tree = {
      .Dco =
      {
          .clocksource = CS_REFOCLK_SELECT,
@@ -55,7 +55,7 @@ const ClockTree tree = {
 #define TIMER_B_BETWEEN_RED_IR_PULSES_US        333
 
 
-const Timer_B_Config timer_b_config =
+static const Timer_B_Config timer_b_config =
 {
      .mode                                  = UP,
      .Timer_B_config_param                  =
@@ -64,7 +64,7 @@ const Timer_B_Config timer_b_config =
           {
                .clockSource                             = TIMER_B_SRC_CLK,
                .clockSourceDivider                      = TIMER_B_CLK_DIV,
-               .timerPeriod                             = TIMER_B_LED_PERIOD_US * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
+               .timerPeriod                             = (TIMER_B_LED_PERIOD_US / TIMER_B_CLK_DIV_VAL) * (TIMER_B_SRC_CLK_PERIOD_HZ / 1e6),
                .timerInterruptEnable_TBIE               = TIMER_B_TBIE_INTERRUPT_DISABLE,
                .captureCompareInterruptEnable_CCR0_CCIE = TIMER_B_CCIE_CCR0_INTERRUPT_ENABLE,
                .timerClear                              = TIMER_B_DO_CLEAR,
@@ -74,7 +74,7 @@ const Timer_B_Config timer_b_config =
 };
 
 #define NUM_CC_CONFIGS     2
-const Timer_B_CC_Config CC_configs [] = {
+static const Timer_B_CC_Config CC_configs [] = {
 
 
     {
@@ -87,7 +87,7 @@ const Timer_B_CC_Config CC_configs [] = {
                   .compareRegister          = TIMER_B_CAPTURECOMPARE_REGISTER_1,
                   .compareInterruptEnable   = TIMER_B_CAPTURECOMPARE_INTERRUPT_ENABLE,
                   .compareOutputMode        = TIMER_B_OUTPUTMODE_RESET_SET,
-                  .compareValue             = TIMER_B_RED_IR_LED_ON_US * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
+                  .compareValue             = (TIMER_B_RED_IR_LED_ON_US / TIMER_B_CLK_DIV_VAL) * (TIMER_B_SRC_CLK_PERIOD_HZ / 1e6),
              },
          },
     },
@@ -103,7 +103,7 @@ const Timer_B_CC_Config CC_configs [] = {
                   .compareRegister          = TIMER_B_CAPTURECOMPARE_REGISTER_1,
                   .compareInterruptEnable   = TIMER_B_CAPTURECOMPARE_INTERRUPT_ENABLE,
                   .compareOutputMode        = TIMER_B_OUTPUTMODE_SET_RESET,
-                  .compareValue             = (TIMER_B_RED_IR_LED_ON_US + TIMER_B_BETWEEN_RED_IR_PULSES_US) * (TIMER_B_SRC_CLK_PERIOD_HZ / TIMER_B_CLK_DIV_VAL / 1e6),
+                  .compareValue             = ((TIMER_B_RED_IR_LED_ON_US + TIMER_B_BETWEEN_RED_IR_PULSES_US) / TIMER_B_CLK_DIV_VAL) * (TIMER_B_SRC_CLK_PERIOD_HZ / 1e6),
 
              },
          },
@@ -111,7 +111,7 @@ const Timer_B_CC_Config CC_configs [] = {
 };
 
 // ADC Globals
-const ADC_Config adc_config =
+static const ADC_Config adc_config =
 {
      .sampleHoldSourceSelect        = ADC_SAMPLEHOLDSOURCE_SC,
      .clockSource                   = ADC_CLOCKSOURCE_SMCLK,
@@ -124,9 +124,29 @@ const ADC_Config adc_config =
      .refBufferSamplingRate         = ADC_MAXSAMPLINGRATE_200KSPS
 };
 
+static const ADC_Measurement_Config photodiode_reading_main =
+{
+     .inputSource               = ADC_INPUT_A9,
+     .posRefVoltage             = ADC_VREFPOS_AVCC,
+     .negRefVoltage             = ADC_VREFNEG_AVSS,
+
+     .conversionSequenceMode = ADC_SINGLECHANNEL,
+     .blocking = true,
+};
+
+static const ADC_Measurement_Config photodiode_reading_dc_offset =
+{
+     .inputSource               = ADC_INPUT_A4,
+     .posRefVoltage             = ADC_VREFPOS_AVCC,
+     .negRefVoltage             = ADC_VREFNEG_AVSS,
+
+     .conversionSequenceMode = ADC_SINGLECHANNEL,
+     .blocking = true,
+};
+
 //SAC Configs
 //For SAC 0 and SAC 2
-const SAC sac_LED_config =
+static const SAC sac_LED_config =
 {
      .sacMode       = DAC,
 
@@ -139,10 +159,10 @@ const SAC sac_LED_config =
 
      .dacRefVoltage = SAC_DAC_PRIMARY_REFERENCE,
      .dacLoad       = SAC_DAC_LOAD_DACDAT_WRITTEN,
-     .dacInitData   = 0x0000,
+     .dacInitData   = 0x0FFF,
 };
 
-const SAC sac_1_config =
+static const SAC sac_1_config =
 {
      .sacMode       = PGA,
      .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
@@ -154,7 +174,7 @@ const SAC sac_1_config =
 
 };
 
-const SAC sac_3_config =
+static const SAC sac_3_config =
 {
      .sacMode       = DAC,
      .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
@@ -173,7 +193,7 @@ const SAC sac_3_config =
 
 // IO Globals
 #define NUM_CONFIG_PINS     23
-const Pin pins[] = {
+static const Pin pins[] = {
     // SAC2 Output Red LED DAC Current Control
     // Pin 2
     {

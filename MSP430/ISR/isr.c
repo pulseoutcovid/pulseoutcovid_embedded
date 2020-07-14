@@ -6,7 +6,7 @@
  */
 
 #include "driverlib.h"
-//#include "pulseoutcovid_config.h"
+#include "pulseoutcovid_config.h"
 
 // IR LED OFF ISR
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
@@ -35,6 +35,9 @@ void __attribute__ ((interrupt(TIMER1_B0_VECTOR))) TIMER1_CCR0_IR_LED_ON_ISR (vo
 {
 
     Timer_B_clearCaptureCompareInterrupt(TB1_BASE, TIMER_B_CAPTURECOMPARE_REGISTER_1);
+
+    int16_t IR_main = ReadADC(&photodiode_reading_main, ADC_BASE);
+    int16_t IR_DC   = ReadADC(&photodiode_reading_dc_offset, ADC_BASE);
     //GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN7 | GPIO_PIN6 | GPIO_PIN5);
 }
 
@@ -50,6 +53,9 @@ void __attribute__ ((interrupt(TIMER2_B0_VECTOR))) TIMER2_CCR0_RED_LED_ON_ISR (v
 {
 
     Timer_B_clearCaptureCompareInterrupt(TB2_BASE, TIMER_B_CAPTURECOMPARE_REGISTER_0);
+
+    int16_t Red_main = ReadADC(&photodiode_reading_main, ADC_BASE);
+    int16_t Red_DC   = ReadADC(&photodiode_reading_dc_offset, ADC_BASE);
     //GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN7 | GPIO_PIN6 | GPIO_PIN5);
 }
 
@@ -66,5 +72,8 @@ void __attribute__ ((interrupt(TIMER2_B1_VECTOR))) TIMER2_CCR1_RED_LED_OFF_ISR (
 {
 
     Timer_B_clearCaptureCompareInterrupt(TB2_BASE, TIMER_B_CAPTURECOMPARE_REGISTER_1);
+
+    int16_t Off_main = ReadADC(&photodiode_reading_main, ADC_BASE);
+    int16_t Off_DC   = ReadADC(&photodiode_reading_dc_offset, ADC_BASE);
     //GPIO_toggleOutputOnPin(GPIO_PORT_P2, GPIO_PIN7 | GPIO_PIN6 | GPIO_PIN5);
 }

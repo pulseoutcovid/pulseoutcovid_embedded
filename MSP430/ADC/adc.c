@@ -46,3 +46,22 @@ void ConfigureADC(const ADC_Config * adc_config, uint16_t baseAddress)
     ADC_enable(baseAddress);
 
 }
+
+int16_t ReadADC(ADC_Measurement_Config * config, uint16_t baseAddress)
+{
+    ADC_configureMemory(baseAddress,
+                        config->inputSource,
+                        config->posRefVoltage,
+                        config->negRefVoltage);
+
+    if(config->blocking)
+    {
+        while(ADC_isBusy(baseAddress))
+        {
+
+        }
+
+        return ADC_getResults(baseAddress);
+    }
+
+}

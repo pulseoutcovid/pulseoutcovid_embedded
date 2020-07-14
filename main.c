@@ -95,7 +95,7 @@ void main (void)
     ConfigureADC(&adc_config, ADC_BASE);
 #endif
 
-    //StartTimerB(&timer_b_config, TB1_BASE);
+    StartTimerB(&timer_b_config, TB1_BASE);
     StartTimerB(&timer_b_config, TB2_BASE);
 
     //Enable oscillator fault interrupt
