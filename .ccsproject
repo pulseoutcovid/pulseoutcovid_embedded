@@ -11,7 +11,7 @@
 	<rts value="libc.a"/>
 	<createSlaveProjects value=""/>
 	<templateProperties value="id=emptyProject.projectspec.emptyProject"/>
-	<origin value="C:\ti\msp430ware_3_80_09_03\driverlib\examples\MSP430FR2xx_4xx\00_emptyProject\CCS\emptyProject.projectspec"/>
+	<origin value="C:/Users/nxf46743/OneDrive/Documents/Sp02_Sensor/pulseoutcovid_embedded"/>
 	<filesToOpen value=""/>
 	<connection value="common/targetdb/connections/TIMSP430-USB.xml"/>
 	<isTargetManual value="false"/>

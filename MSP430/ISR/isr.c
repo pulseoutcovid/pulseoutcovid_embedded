@@ -28,7 +28,7 @@ void __attribute__ ((interrupt(TIMER1_B0_VECTOR))) TIMER1_CCR0_IR_LED_ON_ISR (vo
 #pragma vector=TIMER1_B1_VECTOR
 __interrupt void TIMER1_CCR1_IR_LED_ON_ISR(void)
 #elif defined(__GNUC__)
-void __attribute__ ((interrupt(TIMER1_B0_VECTOR))) TIMER1_CCR0_IR_LED_ON_ISR (void)
+void __attribute__ ((interrupt(TIMER1_B1_VECTOR))) TIMER1_CCR0_IR_LED_ON_ISR (void)
 #else
 #error Compiler not supported!
 #endif

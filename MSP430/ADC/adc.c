@@ -54,6 +54,9 @@ int16_t ReadADC(ADC_Measurement_Config * config, uint16_t baseAddress)
                         config->posRefVoltage,
                         config->negRefVoltage);
 
+    ADC_startConversion(ADC_BASE,
+                    config->conversionSequenceMode);
+
     if(config->blocking)
     {
         while(ADC_isBusy(baseAddress))

@@ -76,7 +76,7 @@ static const Timer_B_Config timer_b_config =
 #define NUM_CC_CONFIGS     2
 static const Timer_B_CC_Config CC_configs [] = {
 
-
+    //RED LED
     {
          .modeSelect                    = COMPARE,
          .baseAddress                   = TB2_BASE,
@@ -92,7 +92,7 @@ static const Timer_B_CC_Config CC_configs [] = {
          },
     },
 
-
+    //IR LED
     {
          .modeSelect                    = COMPARE,
          .baseAddress                   = TB1_BASE,
