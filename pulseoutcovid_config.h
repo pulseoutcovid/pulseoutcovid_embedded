@@ -159,24 +159,28 @@ static const SAC sac_LED_config =
 
      .dacRefVoltage = SAC_DAC_PRIMARY_REFERENCE,
      .dacLoad       = SAC_DAC_LOAD_DACDAT_WRITTEN,
-     .dacInitData   = 0x0FFF,
+     .dacInitData   = 0x001,
 };
 
 static const SAC sac_1_config =
 {
      .sacMode       = PGA,
      .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
-     .oaPosInput    = SAC_OA_POSITIVE_INPUT_SOURCE_EXTERNAL,
+     .oaPosInput    = SAC_OA_POSITIVE_INPUT_SOURCE_DAC,
      .oaNegInput    = SAC_OA_NEGATIVE_INPUT_SOURCE_EXTERNAL,
 
-     .pgaGainMode   = SAC_PGA_MODE_BUFFER,
-     .pgaGain       = SAC_PGA_GAIN_BIT0,               // - 1 Gain
+     .pgaGain       = SAC_PGA_MODE_INVERTING,
+     .pgaGain       = SAC_PGA_GAIN_BIT0,
+
+     .dacRefVoltage = SAC_DAC_PRIMARY_REFERENCE,
+     .dacLoad       = SAC_DAC_LOAD_DACDAT_WRITTEN,
+     .dacInitData   = 3
 
 };
 
 static const SAC sac_3_config =
 {
-     .sacMode       = DAC,
+     .sacMode       = PGA,
      .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
      .oaPosInput    = SAC_OA_POSITIVE_INPUT_SOURCE_DAC,
      .oaNegInput    = SAC_OA_NEGATIVE_INPUT_SOURCE_EXTERNAL,
@@ -288,7 +292,7 @@ static const Pin pins[] = {
         .pin        = GPIO_PIN4,
         .direction  = OUTPUT,
         .mode       = 0,
-        .enable    = true,
+        .enable    = false,
     },
 
     // P4.7 UCB1SCL I2C SCL

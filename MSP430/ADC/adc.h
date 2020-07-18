@@ -24,7 +24,7 @@ typedef struct {
 } ADC_Config;
 
 typedef struct {
-    uint16_t    inputSource;
+    uint8_t     inputSource;
     uint8_t     posRefVoltage;
     uint8_t     negRefVoltage;
 

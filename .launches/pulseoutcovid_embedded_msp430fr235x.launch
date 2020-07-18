@@ -16,7 +16,7 @@
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROGRAM.MSP430FR2355.ccxml.TI MSP430 USB1/MSP430" value="${build_artifact:pulseoutcovid_embedded_msp430fr235x}"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROJECT.MSP430FR2355.ccxml.TI MSP430 USB1/MSP430" value="pulseoutcovid_embedded_msp430fr235x"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_TARGET_CONFIG" value="${target_config_active_default:pulseoutcovid_embedded_msp430fr235x}"/>
-<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.MSP430FR2355.ccxml.TI MSP430 USB1/MSP430" value="C:\Users\nxf46743\OneDrive\Documents\Sp02_Sensor\Sp02_Sensor_Workspace\pulseoutcovid_embedded_msp430fr235x\Debug\pulseoutcovid_embedded_msp430fr235x.out"/>
+<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.MSP430FR2355.ccxml.TI MSP430 USB1/MSP430" value="C:\Users\andre\OneDrive\Documents\Sp02_Sensor\Sp02_Sensor_Workspace\pulseoutcovid_embedded_msp430fr235x\Debug\pulseoutcovid_embedded_msp430fr235x.out"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/pulseoutcovid_embedded_msp430fr235x"/>
 </listAttribute>
