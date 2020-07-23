@@ -45,7 +45,7 @@ static const ClockTree tree = {
 };
 
 //Timer_B Globals
-#define TIMER_B_SRC_CLK                     TIMER_B_CLOCKSOURCE_SMCLK
+#define TIMER_B_SRC_CLK                     TIMER_B_CLOCKSOURCE_ACLK
 #define TIMER_B_SRC_CLK_PERIOD_HZ           24000000
 #define TIMER_B_CLK_DIV                     TIMER_B_CLOCKSOURCE_DIVIDER_6
 #define TIMER_B_CLK_DIV_VAL                 6
@@ -159,22 +159,15 @@ static const SAC sac_LED_config =
 
      .dacRefVoltage = SAC_DAC_PRIMARY_REFERENCE,
      .dacLoad       = SAC_DAC_LOAD_DACDAT_WRITTEN,
-     .dacInitData   = 0x001,
+     .dacInitData   = 0xFFF,
 };
 
 static const SAC sac_1_config =
 {
-     .sacMode       = PGA,
+     .sacMode       = OA,
      .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
-     .oaPosInput    = SAC_OA_POSITIVE_INPUT_SOURCE_DAC,
+     .oaPosInput    = SAC_OA_POSITIVE_INPUT_SOURCE_EXTERNAL,
      .oaNegInput    = SAC_OA_NEGATIVE_INPUT_SOURCE_EXTERNAL,
-
-     .pgaGain       = SAC_PGA_MODE_INVERTING,
-     .pgaGain       = SAC_PGA_GAIN_BIT0,
-
-     .dacRefVoltage = SAC_DAC_PRIMARY_REFERENCE,
-     .dacLoad       = SAC_DAC_LOAD_DACDAT_WRITTEN,
-     .dacInitData   = 3
 
 };
 
@@ -183,7 +176,7 @@ static const SAC sac_3_config =
      .sacMode       = PGA,
      .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
      .oaPosInput    = SAC_OA_POSITIVE_INPUT_SOURCE_DAC,
-     .oaNegInput    = SAC_OA_NEGATIVE_INPUT_SOURCE_EXTERNAL,
+     .oaNegInput    = SAC_OA_NEGATIVE_INPUT_SOURCE_PGA,
 
      .pgaGainMode   = SAC_PGA_MODE_INVERTING,
      .pgaGain       = SAC_PGA_GAIN_BIT2,                // -8 Gain

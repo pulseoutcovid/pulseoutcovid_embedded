@@ -28,7 +28,6 @@ inline void ConfigureDAC_PGA(const SAC * sac_config, uint16_t baseAddress)
     SAC_OA_init(baseAddress, sac_config->oaPosInput, sac_config->oaNegInput);
     SAC_OA_selectPowerMode(baseAddress, sac_config->oaPowerMode);
 
-
     SAC_PGA_setGain(baseAddress, sac_config->pgaGain);
     SAC_PGA_setMode(baseAddress, sac_config->pgaGainMode);
 
@@ -39,6 +38,12 @@ inline void ConfigureDAC_PGA(const SAC * sac_config, uint16_t baseAddress)
 
 inline void ConfigureOA(const SAC * sac_config, uint16_t baseAddress)
 {
+    //DAC configuration
+    SAC_DAC_selectRefVoltage(baseAddress, sac_config->dacRefVoltage);
+    SAC_DAC_selectLoad(baseAddress, sac_config->dacLoad);
+    SAC_DAC_setData(baseAddress, sac_config->dacInitData);
+    SAC_DAC_enable(baseAddress);
+
     //OA Initialization
     SAC_OA_init(baseAddress, sac_config->oaPosInput, sac_config->oaNegInput);
     SAC_OA_selectPowerMode(baseAddress, sac_config->oaPowerMode);
