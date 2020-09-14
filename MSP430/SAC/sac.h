@@ -27,9 +27,9 @@ typedef struct {
     uint16_t dacRefVoltage;
     uint16_t dacLoad;
     uint16_t dacInitData;
-}SAC;
+} SAC_config;
 
 
-void ConfigureSAC(const SAC * sac_config, uint16_t baseAddress);
+void ConfigureSAC(const SAC_config * sac_config, uint16_t baseAddress);
 
 #endif /* MSP430_SAC_SAC_H_ */

@@ -16,7 +16,7 @@
 #include "sac.h"
 
 
-inline void ConfigureDAC_PGA(const SAC * sac_config, uint16_t baseAddress)
+inline void ConfigureDAC_PGA(const SAC_config * sac_config, uint16_t baseAddress)
 {
     //DAC configuration
     SAC_DAC_selectRefVoltage(baseAddress, sac_config->dacRefVoltage);
@@ -36,7 +36,7 @@ inline void ConfigureDAC_PGA(const SAC * sac_config, uint16_t baseAddress)
     SAC_enable(baseAddress);
 }
 
-inline void ConfigureOA(const SAC * sac_config, uint16_t baseAddress)
+inline void ConfigureOA(const SAC_config * sac_config, uint16_t baseAddress)
 {
     //DAC configuration
     SAC_DAC_selectRefVoltage(baseAddress, sac_config->dacRefVoltage);
@@ -53,7 +53,7 @@ inline void ConfigureOA(const SAC * sac_config, uint16_t baseAddress)
 }
 
 
-void ConfigureSAC(const SAC * sac_config, uint16_t baseAddress)
+void ConfigureSAC(const SAC_config * sac_config, uint16_t baseAddress)
 {
     switch(sac_config->sacMode)
     {

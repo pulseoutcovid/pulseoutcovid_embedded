@@ -32,6 +32,7 @@
 
 //C Std Includes
 #include <stdbool.h>
+#include <string.h>
 
 //Include MSP430Ware Driver Header
 #include "driverlib.h"
@@ -40,6 +41,7 @@
 #include "MSP430/Clock/clock.h"
 #include "MSP430/Timer_B/timer_b.h"
 #include "MSP430/SAC/sac.h"
+#include "MSP430/eUSCI/eUSCI.h"
 
 //PulseOutCovid Global Defines
 #include "pulseoutcovid_config.h"
@@ -64,8 +66,20 @@ void main (void)
     //Verify if the Clock settings are as expected
     clockValue = CS_getMCLK();
 
+    //Configure UART
+    bool uart_status = ConfigureEUSCI(&EUSCI_A1_config, EUSCI_A1_BASE);
+    if(!uart_status)
+    {
+        //Error
+        while(1);
+    }
+
     //Configure IO
     ConfigurePins(pins, NUM_CONFIG_PINS);
+
+    char ok_status[] = "UART Ready!\n";
+    SendDataEUSCI_UART(EUSCI_A1_BASE, &ok_status, 11);
+
 
 #if !DEBUG
     //Configure SACs
@@ -87,6 +101,7 @@ void main (void)
     //Configure TimerB
     ConfigureTimerB(&timer_b_config, TB1_BASE);
     ConfigureTimerB(&timer_b_config, TB2_BASE);
+    Timer_B_enableCaptureCompareInterrupt(TB2_BASE, TIMER_B_CAPTURECOMPARE_REGISTER_0);
 
     //Setup CC registers
     ConfigureCCModes(CC_configs, NUM_CC_CONFIGS);
@@ -102,6 +117,7 @@ void main (void)
     SFR_enableInterrupt(SFR_OSCILLATOR_FAULT_INTERRUPT);
 
     GPIO_setOutputLowOnPin(RED_IND_LED_PORT, GREEN_IND_LED_PIN | RED_IND_LED_PIN | YELLOW_IND_LED_PIN);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN0);
 
     // Enable global interrupt
     __bis_SR_register(GIE);
@@ -110,8 +126,9 @@ void main (void)
 
 #if DEBUG
         //Delay
-        __delay_cycles(12000000);
+        __delay_cycles(120000);
         GPIO_toggleOutputOnPin(RED_IND_LED_PORT, GREEN_IND_LED_PIN | RED_IND_LED_PIN | YELLOW_IND_LED_PIN);
+        GPIO_toggleOutputOnPin(GPIO_PORT_P5, GPIO_PIN0);
 #endif
     }
 

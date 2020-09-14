@@ -13,8 +13,9 @@
 #include "MSP430/Timer_B/timer_b.h"
 #include "MSP430/ADC/adc.h"
 #include "MSP430/SAC/sac.h"
+#include "MSP430/eUSCI/eUSCI.h"
 
-#define DEBUG 0
+#define DEBUG 1
 
 
 
@@ -45,7 +46,7 @@ static const ClockTree tree = {
 };
 
 //Timer_B Globals
-#define TIMER_B_SRC_CLK                     TIMER_B_CLOCKSOURCE_ACLK
+#define TIMER_B_SRC_CLK                     TIMER_B_CLOCKSOURCE_SMCLK
 #define TIMER_B_SRC_CLK_PERIOD_HZ           24000000
 #define TIMER_B_CLK_DIV                     TIMER_B_CLOCKSOURCE_DIVIDER_6
 #define TIMER_B_CLK_DIV_VAL                 6
@@ -66,7 +67,7 @@ static const Timer_B_Config timer_b_config =
                .clockSourceDivider                      = TIMER_B_CLK_DIV,
                .timerPeriod                             = (TIMER_B_LED_PERIOD_US / TIMER_B_CLK_DIV_VAL) * (TIMER_B_SRC_CLK_PERIOD_HZ / 1e6),
                .timerInterruptEnable_TBIE               = TIMER_B_TBIE_INTERRUPT_DISABLE,
-               .captureCompareInterruptEnable_CCR0_CCIE = TIMER_B_CCIE_CCR0_INTERRUPT_ENABLE,
+               .captureCompareInterruptEnable_CCR0_CCIE = TIMER_B_CCIE_CCR0_INTERRUPT_DISABLE,
                .timerClear                              = TIMER_B_DO_CLEAR,
                .startTimer                              = false,
           },
@@ -146,7 +147,7 @@ static const ADC_Measurement_Config photodiode_reading_dc_offset =
 
 //SAC Configs
 //For SAC 0 and SAC 2
-static const SAC sac_LED_config =
+static const SAC_config sac_LED_config =
 {
      .sacMode       = DAC,
 
@@ -162,7 +163,7 @@ static const SAC sac_LED_config =
      .dacInitData   = 0xFFF,
 };
 
-static const SAC sac_1_config =
+static const SAC_config sac_1_config =
 {
      .sacMode       = OA,
      .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
@@ -171,7 +172,7 @@ static const SAC sac_1_config =
 
 };
 
-static const SAC sac_3_config =
+static const SAC_config sac_3_config =
 {
      .sacMode       = PGA,
      .oaPowerMode   = SAC_OA_POWER_MODE_HIGH_SPEED_HIGH_POWER,
@@ -186,6 +187,32 @@ static const SAC sac_3_config =
      .dacInitData   = 273                               // ~220 mv offset
 
 };
+
+// EUSCI Config
+// UART
+static const EUSCI_config EUSCI_A1_config =
+{
+     .eUSCImode = UART,
+     .mode_config =
+     {
+          .eUSCI_A_UART_config =
+          {
+               // 24 MHZ SMCLK
+               .selectClockSource       =   EUSCI_A_UART_CLOCKSOURCE_SMCLK,
+               // 115200 Baud Rate
+               .clockPrescalar          =   13,
+               .firstModReg             =   0,
+               .secondModReg            =   0,
+               .parity                  =   EUSCI_A_UART_NO_PARITY,
+               .msborLsbFirst           =   EUSCI_A_UART_LSB_FIRST,
+               .numberofStopBits        =   EUSCI_A_UART_ONE_STOP_BIT,
+               .uartMode                =   EUSCI_A_UART_MODE,
+               .overSampling            =   EUSCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION
+          },
+     },
+     .interrupt_mask = 0x00,
+};
+
 
 
 // IO Globals
@@ -328,13 +355,17 @@ static const Pin pins[] = {
         .enable    = true,
     },
 
-    // P2.1 TB2.1 Red LED PWM
-    // Pin 26
+    // P5.0 TB2.1 Red LED PWM
+    // Pin 37
     {
         .port       = GPIO_PORT_P5,
         .pin        = GPIO_PIN0,
         .direction  = OUTPUT,
+#if DEBUG
+        .mode       = 0,
+#else
         .mode       = GPIO_PRIMARY_MODULE_FUNCTION,
+#endif
         .enable    = true,
     },
 
